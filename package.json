@@ -18,6 +18,7 @@
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
+    "express-handlebars": "^7.1.2",
     "express-session": "^1.17.3",
     "express-signed-url": "^3.1.0",
     "formidable": "^3.5.0",

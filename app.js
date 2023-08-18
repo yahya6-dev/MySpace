@@ -7,11 +7,14 @@ const bodyParser = require("body-parser")
 const csurf = require("csurf")
 const formidable = require("formidable")
 const cors = require("cors")
-
-
+const handlers = require("./lib/handlers")
+const expressSession = require("express-session")
+const helmet = require("helmet")
 //set handlebars and its configuration
 //our app instance
+let model = require("./lib/Model")
 let app = express()
+
 let create = handlebars.create({
  helpers:{
  	section:function(name,options) {
@@ -23,26 +26,73 @@ let create = handlebars.create({
 
 })
 
-app.get("/test",(req,res) => res.send(["hello"]))
-//config cross site request this is for development purpose
-app.use(cors({origin:"http://127.0.0.1:3000/*"}))
+
 //allow proxying this is only for development stage
 app.enable("trust proxy")
 //config static middleware
-app.use(express.static(__dirname + "/public"))
+app.use("/static",express.static(__dirname + "/public"))
 app.engine("handlebars",create.engine)
 app.set("view engine","handlebars")
 app.set("views","./views")
+app.use(helmet({
+	xContentTypeOptions:false,
+	contentSecurityPolicy:{
+		directives:{},
+		reportOnly:true
+	}
+}))
 //current instance config credentials
 let credentials = require(`./credentials-${app.get("env")}.json`)
-//listening port for testing purpose
-let port = process.env.PORT || 3033
-
 //config necessary middleware for parsing
 //urlencoded data and json, and for using cookies
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(cookieParser(credentials.secretKey))
+app.use(expressSession({
+	resave:false,
+	saveUninitialized:false,
+	secret:credentials.secretKey
+
+}))
+
+
+//init db 
+//app.use(bodyParser.urlencoded(extended:false))
+const db = require("./lib/db")(app.get("env"))
+if (app.get("env") === "production"){
+	model.UserModel({
+		username:"YahyaSaid",
+		email:"yahyasaid935@gmail.com",
+		password:"hornet",
+		authorImage:"site-author.png",
+		lastActivity:"2hours",
+		isAdmin:true,
+		verified:true
+	}).save()
+}
+//route for sending mail
+app.post("/api/sendmail",handlers.sendMail)
+app.get("/",handlers.index)
+//add registration route
+app.get("/api/verify/:user",handlers.verify)
+app.post("/api/register",handlers.register)
+app.post("/api/admin-upload",handlers.admin)
+//image upload route
+app.post("/api/upload-image",handlers.upload)
+app.post("/api/login",handlers.login)
+//logout route
+app.get("/api/logout",handlers.logout)
+app.get("/api/briefs",handlers.briefs)
+app.get("/api/articles",handlers.articles)
+app.get("/api/article/:article",handlers.article)
+app.post("/api/search",handlers.search)
+//route for handling newsletter subscription
+app.post("/api/subscription",handlers.subscribe)
+//config cross site request this is for development purpose
+//app.use(cors())
+//listening port for testing purpose
+let port = process.env.PORT || 3000
+
 
 
 if (require.name === module) {

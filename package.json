@@ -2,12 +2,13 @@
   "name": "myspace",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app-cluster.js",
   "directories": {
     "lib": "lib"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app-cluster"
   },
   "keywords": [],
   "author": "",
@@ -18,11 +19,14 @@
     "cors": "^2.8.5",
     "csurf": "^1.11.0",
     "express-session": "^1.17.3",
+    "express-signed-url": "^3.1.0",
     "formidable": "^3.5.0",
+    "helmet": "^7.0.0",
     "http-proxy-middleware": "^2.0.6",
     "jest": "^29.6.2",
     "mongoose": "^7.4.1",
     "morgan": "^1.10.0",
-    "nodemailer": "^6.9.4"
+    "nodemailer": "^6.9.4",
+    "signed": "^2.0.3"
   }
 }

@@ -91,7 +91,7 @@ app.post("/api/subscription",handlers.subscribe)
 //config cross site request this is for development purpose
 //app.use(cors())
 //listening port for testing purpose
-let port = process.env.PORT || 3000
+let port = process.env.PORT || 4000
 
 
 
